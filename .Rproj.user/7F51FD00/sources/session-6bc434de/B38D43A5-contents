@@ -1,0 +1,63 @@
+
+#positionnement
+setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
+
+# # importation fichier avec chaque collembole identifier
+id.coll<- read.csv("ID_COLL.csv", header = TRUE, stringsAsFactors = TRUE)
+# 
+# # Transformation en fichier d'abondance (Site x month)
+# 
+# tab.coll<- table(id.coll$site, id.coll$month)
+# abun.coll<- as.matrix.data.frame(tab.coll)
+# colnames(abun.coll)<-c("aout","juillet","juin","mai")
+# abun.coll<-abun.coll[,c("mai","juin", "juillet","aout")]
+# 
+# 
+# 
+# names<-row.names(tab.coll)
+# row.names(abun.coll)<-names
+# 
+# abun.coll<-as.data.frame(abun.coll)
+
+# write.csv(abun.coll,file = "abun_coll.csv", row.names = TRUE)
+
+abun.coll<- read.csv("coll_abundance.csv", header = TRUE, stringsAsFactors = TRUE)
+data.60<- read.csv("Data_60.csv", header = TRUE, stringsAsFactors = TRUE)
+
+# det.coll<- as.data.frame(ifelse(abun.coll[,-1] > 0 ,1,0))
+# 
+# det.coll$ID<-abun.coll$X
+# 
+# det.coll.m<- merge(data.60,det.coll,by= "ID", all.x = TRUE)
+# 
+# det.coll<- det.coll.m[,c("ID","mai","juin","juillet","aout")]
+# 
+# det.coll[is.na(det.coll)]<-0
+# 
+# write.csv(det.coll, file = "det_coll.csv", row.names = FALSE)
+
+abun.coll$sum<- rowSums(abun.coll[,c(2:5)])
+
+nrow(abun.coll[abun.coll$sum <= 4 & abun.coll$sum > 0,])
+
+colnames(abun.coll)<-c("ID","mai","juin", "juillet","aout","sum")
+
+abun.coll.m<- merge(x=data.60, y=abun.coll, by="ID", all.x = TRUE)
+
+abun.coll<- abun.coll.m[,c("ID","mai","juin", "juillet","aout","sum")]
+
+abun.coll[is.na(abun.coll)]<-0
+
+nrow(abun.coll[abun.coll$sum <= 4 & abun.coll$sum > 0,])
+nrow(abun.coll[abun.coll$sum == 0,])
+
+site.low<-as.data.frame(abun.coll$ID[abun.coll$sum <= 4 & abun.coll$sum > 0])
+colnames(site.low)<-"site"
+
+site.low.m<- merge( x= site.low, y= id.coll, by= "site", all.x = TRUE)
+
+coll.site<-site.low.m[,c("site","ord.fam")]
+coll.unique<- as.data.frame(unique(coll.site))
+
+fam.coll<- id.coll[,c("site","ord.fam")]
+uni.fam.coll<- unique(fam.coll)
