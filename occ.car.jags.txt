@@ -1,0 +1,47 @@
+
+model {
+
+ ##prior
+ #prior for psi
+ beta0.car ~ dnorm(0,0.001)
+ beta.cwd.car ~ dnorm (0, 0.001)
+ beta.canop.car ~ dnorm (0, 0.001)
+ 
+ #prior for p
+ alpha0.car ~ dnorm(0,0.001)
+ alpha.precip.car ~ dnorm(0,0.001)
+ alpha.cwd.car ~ dnorm(0,0.001)
+ 
+ 
+  ##likelihood
+ ##first loop over nsites
+ for (i in 1:nsites) {
+    ##True occupancy z at site i (biological process)
+    z[i] ~ dbern(psi[i])
+
+    ##linear predictor of psi
+    logit(psi[i]) <- beta0.car + beta.cwd.car * CWD.STD.occ[i] 
+    + beta.canop.car * Canop[i]
+    
+
+    ##second loop over nvisits
+    for (j in 1:nvisits) {
+        ##linear predictor of p
+        logit(p[i, j]) <- alpha0.car + alpha.precip.car * Precip[i,j] 
+        + alpha.cwd.car * CWD.STD.det[i,j]
+    
+        ##p = 0 if site not occupied
+        eff.p[i, j] <- z[i] * p[i, j]
+
+        ##detection at i j (observation process)
+        y[i, j] ~ dbern(eff.p[i, j])
+    
+      }
+ }
+
+## derived parameter
+ ##number of occupied sites among nsites
+ finiteOcc <- sum(z[])
+}
+
+

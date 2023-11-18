@@ -10,7 +10,39 @@ library(dplyr)
 #positionnement
 setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
 
+load("SEM_data_JAGS.RData")
+
+
 # vérification identification de collemboles
+
+test<- read.csv("cov_visite.csv", header = TRUE, stringsAsFactors = TRUE, sep = ",")
+
+test4<- test[,-1]
+test<-test4[order(test4$Site),]
+colnames(test)[1]<-"sites"
+
+
+write.csv(test,"Pcin_abundance.csv",row.names = F)
+
+# test3<-test[,c("ID_site","Bloc", "Coupe", "Exclos", "Analogue", "Diam_bas", "Diam_api",
+#                "Longueur", "Classe")]
+# 
+# colnames(test3)[1]<-"sites"
+# 
+# test3<-test2[order(test2$X),]
+# 
+# test4<-merge()
+# 
+# test2<- test %>% arrange(sites)
+# write.csv(test3,"cwd_mesures.csv",row.names = F)
+# 
+test2<- read.csv("cov_jday.csv", header = TRUE, stringsAsFactors = TRUE, sep = ",")
+
+test3<- read.csv("cov_precip.csv", header = TRUE, stringsAsFactors = TRUE, sep = ",")
+
+
+
+######
 
 id.coll<- read.csv("ID_COLL.csv", header = TRUE, stringsAsFactors = TRUE)
 
