@@ -5,7 +5,7 @@ setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
 
 ##SALAMANDRES
 pcin_det <-
-  read.csv("pcin_det.csv",
+  read.csv("det_pcin.csv",
            header = TRUE,
            stringsAsFactors = TRUE)
 pcin <- det_pcin[, -1]
