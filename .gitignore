@@ -5,6 +5,11 @@
 *.pdf
 *.xlsx
 *.png
+.Rproj.user/
+.Rproj.user/shared/
+out_canope_100K50Kb_Cut_hetVar_blockRE.Rdata
+out_cwd_100K50Kb_Cut_hetVar_blockRE.Rdata
+
 
 ### Adobe ###
 # Adobe Source Files
