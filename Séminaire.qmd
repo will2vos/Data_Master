@@ -1,0 +1,19 @@
+---
+title: "Séminaire en sciences forestières"
+format: pdf
+editor: visual
+---
+
+## Attentes
+
+-   Étudiant(e)
+-   NIP
+-   Cours : FOR-6004 Séminaire de maîtrise en sciences forestières \*Session
+-   Nom de l'événement (colloque, etc.)
+-   Lieu et date de l'événement \*Site web de l'événement (si disponible)
+-   Titre de la présentation
+-   Résumé de la présentation
+-   Nombre de personnes présentes (oral) ou qui ont posé des questions (affiche)
+-   Résumé de la période de questions (durée, nombre de questions, nature des questions)
+-   Au moins 3 fiches d'évaluation remplies et signées (disponible ci-dessous)
+-   Signature du directeur ou de la directrice de recherche (1 personne suffit en cas de codirection)

@@ -1,0 +1,43 @@
+
+model {
+  ## Priors
+  beta0 ~ dnorm(0, 0.01)
+  beta.Cutpartial ~ dnorm(0, 0.01)
+  beta.Cutclear ~ dnorm(0, 0.01)
+
+##random effects of block
+for(m in 1:nblocks) {
+  alpha.block[m] ~ dnorm(0, tau.block)
+}
+
+tau.block <- pow(sigma.block, -2)
+sigma.block ~ dunif(0, 10)
+
+##different variance for each group
+for(j in 1:3) {
+  tau.cwd[j] <- pow(sigma[j], -2)
+  sigma[j] ~ dunif(0, 50)
+}
+
+
+  ## Likelihood
+  for (i in 1:nsites) {
+     mu.cwd[i] <- beta0 + beta.Cutpartial*Cutpartial[i] +
+     beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
+
+     CWD[i] ~ dnorm(mu.cwd[i], tau.cwd[CoupeNum[i]])
+  }
+
+##predicted values
+for(i in 1:nsites) {
+pred[i] <- mu.cwd[i]
+
+##raw residuals
+res[i] <- CWD[i] - mu.cwd[i]
+##Pearson residuals
+res.pearson[i] <- res[i]/sigma[CoupeNum[i]]
+
+}
+
+}
+
