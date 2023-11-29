@@ -5,6 +5,7 @@
 *.pdf
 *.xlsx
 *.png
+*.Rdata
 .Rproj.user/
 .Rproj.user/shared/
 out_canope_100K50Kb_Cut_hetVar_blockRE.Rdata
