@@ -1,0 +1,42 @@
+
+model {
+  ## Priors
+  beta0 ~ dnorm(0, 0.01)
+  beta.Cutpartial ~ dnorm(0, 0.01)
+  beta.Cutclear ~ dnorm(0, 0.01)
+
+##random effects of block
+for(m in 1:nblocks) {
+  alpha.block[m] ~ dnorm(0, tau.block)
+}
+
+tau.block <- pow(sigma.block, -2)
+sigma.block ~ dunif(0, 10)
+
+
+##prior for residual variance
+sigma ~ dunif(0, 10)
+tau.lit <- 1/(sigma * sigma)
+
+
+  ## Likelihood
+  for (i in 1:nsites) {
+     mu.lit[i] <- beta0 + beta.Cutpartial*Cutpartial[i] + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
+
+     Litter[i] ~ dnorm(mu.lit[i], tau.lit)
+  }
+
+## Derived values
+for (i in 1:nsites) {
+   res[i] <- Litter[i] - mu.lit[i]
+   pred[i] <- mu.lit[i] #linear predictor
+}
+
+## Derived values
+#  res.pearson[i] <- res[i]/sigma[i]
+
+
+}
+
+
+

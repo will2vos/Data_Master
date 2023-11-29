@@ -1,5 +1,4 @@
 ---
-title: "Memoire"
 format: pdf
 editor: visual
 editor_options: 
@@ -7,6 +6,9 @@ editor_options:
 execute: 
   echo: false
 ---
+
+![](alt_p.pdf)
+
 
 ## Quarto
 

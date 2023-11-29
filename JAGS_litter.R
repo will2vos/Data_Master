@@ -144,7 +144,7 @@ out.lit <- jags(
   n.adapt = 10000
 )
 
-save(out.lit, file = "out_litter_100K50Kb_Cut_hetVar_blockRE.Rdata")
+#save(out.lit, file = "out_litter_100K50Kb_Cut_hetVar_blockRE.Rdata")
 
 print(out.lit, digits = 3)
 
@@ -245,8 +245,6 @@ outSum.lit
 
 
 
-#```{r, echo=FALSE}
-
 # sample data
 lit_data <- data.frame(
   treatments = c("Témoin", "Partielle", "Totale"),
@@ -306,9 +304,6 @@ abline(
 )
 quant2v3.lit
 
-#```
-
-#```{r, echo=FALSE}
 par(mfcol = c(1, 1),
     mar = c(5.1, 5.1, 4.1, 4.1))
 
@@ -354,4 +349,4 @@ axis(
   padj = 0.5
 )
 
-#```
+
