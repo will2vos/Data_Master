@@ -872,7 +872,7 @@ nt <- 5
 #   n.adapt = 10000
 # )
 
-load(file = "out_litter_100K50Kb_Cut_hetVar_blockRE.Rdata")
+load(file = "out_litter_100K50Kb_Cut_hetVar.Rdata")
 
 ```
 

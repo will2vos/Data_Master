@@ -16,14 +16,13 @@ sigma.block ~ dunif(0, 10)
 ##different variance for each group
 for(j in 1:3) {
   tau.cwd[j] <- pow(sigma[j], -2)
-  sigma[j] ~ dunif(0, 50)
+  sigma[j] ~ dunif(0, 150)
 }
 
 
   ## Likelihood
   for (i in 1:nsites) {
-     mu.cwd[i] <- beta0 + beta.Cutpartial*Cutpartial[i] +
-     beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
+     mu.cwd[i] <- beta0 + beta.Cutpartial*Cutpartial[i] + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
 
      CWD[i] ~ dnorm(mu.cwd[i], tau.cwd[CoupeNum[i]])
   }

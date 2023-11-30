@@ -1,14 +1,12 @@
 #cut ~ CWD
-#positionnement
-setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
 
 #dataset
 load("SEM_data_JAGS.RData")
 
-hist(data.JAGS$Obs_cov$CWD_tot_m3)
+hist(data.JAGS$Obs_cov$CWD)
 
 ##CWD
-CWD <- data.JAGS$Obs_cov$CWD_tot
+CWD <- data.JAGS$Obs_cov$CWD
 ##cutting treatment
 Coupe <- data.JAGS$Obs_cov$Coupe
 
@@ -266,6 +264,58 @@ range(coda.out$statistics[, "Time-series SE"] / coda.out$statistics[, "SD"])
 
 
 
+##graphics to compare groups, IC 95%
+
+par(mfcol = c(1, 1),
+    mar = c(5.1, 5.1, 4.1, 4.1))
+
+diff.1v2.cwd <- out.cwd$sims.list$beta0 -
+  out.cwd$sims.list$beta.Cutpartial
+hist(diff.1v2.cwd,
+     main = "Différence des distributions de postérieurs \npour le volume de débris ligneux",
+     xlab = "Témoin vs coupe partielle",
+     ylab = "Fréquence")
+quant1v2.cwd <- quantile(diff.1v2.cwd, probs = c(0.025, 0.975))
+abline(
+  v = quant1v2.cwd,
+  lty = 2,
+  col = "red",
+  lwd = 3
+)
+quant1v2.cwd
+
+diff.1v3.cwd <- out.cwd$sims.list$beta0 -
+  out.cwd$sims.list$beta.Cutclear
+hist(diff.1v3.cwd,
+     main = NA,
+     xlab = "Témoin vs coupe totale",
+     ylab = "Fréquence")
+quant1v3.cwd <- quantile(diff.1v3.cwd, probs = c(0.025, 0.975))
+abline(
+  v = quant1v3.cwd,
+  lty = 2,
+  col = "red",
+  lwd = 3
+)
+quant1v3.cwd
+
+diff.2v3.cwd <- out.cwd$sims.list$beta.Cutpartial -
+  out.cwd$sims.list$beta.Cutclear
+hist(diff.2v3.cwd,
+     main = NA,
+     xlab = "Coupe partielle vs coupe totale",
+     ylab = "Fréquence")
+quant2v3.cwd <- quantile(diff.2v3.cwd, probs = c(0.025, 0.975))
+abline(
+  v = quant2v3.cwd,
+  lty = 2,
+  col = "red",
+  lwd = 3
+)
+quant2v3.cwd
+
+
+
 ## graphic CWD ~ cut
 
 outSum.cwd <-
@@ -273,13 +323,19 @@ outSum.cwd <-
 outSum.cwd
 
 # sample data
-cwd_data <- data.frame(
-  treatments = c("Témoin", "Partielle", "Totale"),
+cwd_data_sum <- data.frame(
   mean = c(outSum.cwd[1:3, 1]),
   lower = c(outSum.cwd[1:3, 3]),
   upper = c(outSum.cwd[1:3, 4])
 )
 
+cwd_data<- as.data.frame(cwd_data_sum[1,])
+cwd_data[2,]<- cwd_data_sum[1,]+cwd_data_sum[2,]
+cwd_data[3,]<- cwd_data_sum[1,]+cwd_data_sum[3,]
+
+row.names(cwd_data)<- row.names(cwd_data_sum)
+
+cwd_data$treatments<- c("Témoin", "Partielle", "Totale")
 cwd_data
 
 par(mfcol = c(1, 1),
@@ -290,10 +346,10 @@ par(mfcol = c(1, 1),
 plot(
   NA,
   xlim = c(0, 4),
-  ylim = c(0, 20000),
+  ylim = c(0, 25),
   main = "Collemboles",
   xlab = "Coupes forestières",
-  ylab = "CWD (cm3)",
+  ylab = "CWD (m3)",
   xaxt = "n",
   cex.axis = 1.2,
   cex.lab = 1.2,

@@ -14,27 +14,30 @@ tau.block <- pow(sigma.block, -2)
 sigma.block ~ dunif(0, 10)
 
 
-##prior for residual variance
-sigma ~ dunif(0, 10)
-tau.lit <- 1/(sigma * sigma)
+##different variance for each group
+for(j in 1:3) {
+  tau.lit[j] <- pow(sigma[j], -2)
+  sigma[j] ~ dunif(0, 150)
+}
 
 
   ## Likelihood
   for (i in 1:nsites) {
      mu.lit[i] <- beta0 + beta.Cutpartial*Cutpartial[i] + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
 
-     Litter[i] ~ dnorm(mu.lit[i], tau.lit)
+     Litter[i] ~ dnorm(mu.lit[i], tau.lit[CoupeNum[i]])
   }
 
-## Derived values
-for (i in 1:nsites) {
-   res[i] <- Litter[i] - mu.lit[i]
-   pred[i] <- mu.lit[i] #linear predictor
+##predicted values
+for(i in 1:nsites) {
+pred[i] <- mu.lit[i]
+
+##raw residuals
+res[i] <- Litter[i] - mu.lit[i]
+##Pearson residuals
+res.pearson[i] <- res[i]/sigma[CoupeNum[i]]
+
 }
-
-## Derived values
-#  res.pearson[i] <- res[i]/sigma[i]
-
 
 }
 

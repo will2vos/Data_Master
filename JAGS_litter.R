@@ -5,15 +5,15 @@
 #dataset
 load("SEM_data_JAGS.RData")
 
-hist(data.JAGS$Obs_cov$litter.depth)
+hist(data.JAGS$Obs_cov$litter)
 
 ##CWD
-Litter <- data.JAGS$Obs_cov$litter.depth
+Litter <- data.JAGS$Obs_cov$litter
 ##cutting treatment
 Coupe <- data.JAGS$Obs_cov$Coupe
 
 ##numeric ID to select groups
-#CoupeNum <- as.numeric(data.JAGS$Obs_cov$Coupe)
+CoupeNum <- as.numeric(data.JAGS$Obs_cov$Coupe)
 #3=témoin, 1=partielle, 2=totale
 
 BlockOrig <- data.JAGS$Obs_cov$Bloc
@@ -48,27 +48,30 @@ tau.block <- pow(sigma.block, -2)
 sigma.block ~ dunif(0, 10)
 
 
-##prior for residual variance
-sigma ~ dunif(0, 10)
-tau.lit <- 1/(sigma * sigma)
+##different variance for each group
+for(j in 1:3) {
+  tau.lit[j] <- pow(sigma[j], -2)
+  sigma[j] ~ dunif(0, 150)
+}
 
 
   ## Likelihood
   for (i in 1:nsites) {
      mu.lit[i] <- beta0 + beta.Cutpartial*Cutpartial[i] + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
 
-     Litter[i] ~ dnorm(mu.lit[i], tau.lit)
+     Litter[i] ~ dnorm(mu.lit[i], tau.lit[CoupeNum[i]])
   }
 
-## Derived values
-for (i in 1:nsites) {
-   res[i] <- Litter[i] - mu.lit[i]
-   pred[i] <- mu.lit[i] #linear predictor
+##predicted values
+for(i in 1:nsites) {
+pred[i] <- mu.lit[i]
+
+##raw residuals
+res[i] <- Litter[i] - mu.lit[i]
+##Pearson residuals
+res.pearson[i] <- res[i]/sigma[CoupeNum[i]]
+
 }
-
-## Derived values
-#  res.pearson[i] <- res[i]/sigma[i]
-
 
 }
 
@@ -84,13 +87,12 @@ lin.data <- list(
   Litter = as.numeric(Litter),
   Cutpartial = as.numeric(Cutpartial),
   Cutclear = as.numeric(Cutclear),
+  CoupeNum = CoupeNum,
   nsites = nsites,
   Block = Block,
   nblocks = 4
 )
 str(lin.data)
-
-# CoupeNum = CoupeNum,
 
 
 # initial values of intercepts
@@ -99,7 +101,7 @@ inits <- function() {
     beta0 = rnorm(1),
     beta.Cutpartial = rnorm(1),
     beta.Cutclear = rnorm(1),
-    sigma = rlnorm(1),
+    sigma = rlnorm(3),
     alpha.block = rnorm(nblocks),
     sigma.block = runif(1, 0, 10)
   )
@@ -114,6 +116,7 @@ params <- c(
   "sigma",
   "pred",
   "res",
+  "res.pearson",
   "sigma.block"
 )
 
@@ -144,21 +147,23 @@ out.lit <- jags(
   n.adapt = 10000
 )
 
-#save(out.lit, file = "out_litter_100K50Kb_Cut_hetVar_blockRE.Rdata")
+save(out.lit, file = "out_litter_100K50Kb_Cut_hetVar.Rdata")
 
 print(out.lit, digits = 3)
 
 out.lit$summary[c("beta0",
                   "beta.Cutpartial",
                   "beta.Cutclear",
-                  "sigma"),
+                  "sigma[1]",
+                  "sigma[2]",
+                  "sigma[3]"),
                 c("mean", "sd", "2.5%", "97.5%", "Rhat")]
 
 ##Rhat
 hist(out.lit$summary[, "Rhat"])
 any(out.lit$summary[, "Rhat"] > 1.1)
 
-par(mfrow = c(2, 2),
+par(mfrow = c(2, 3),
     mar = c(4, 4, 2, 2))
 
 matplot(
@@ -205,18 +210,46 @@ matplot(
 
 matplot(
   cbind(
-    out.lit$samples[[1]][, "sigma"],
-    out.lit$samples[[2]][, "sigma"],
-    out.lit$samples[[3]][, "sigma"],
-    out.lit$samples[[4]][, "sigma"],
-    out.lit$samples[[5]][, "sigma"]
+    out.lit$samples[[1]][, "sigma[1]"],
+    out.lit$samples[[2]][, "sigma[1]"],
+    out.lit$samples[[3]][, "sigma[1]"],
+    out.lit$samples[[4]][, "sigma[1]"],
+    out.lit$samples[[5]][, "sigma[1]"]
   ),
   type = "l",
-  ylab = "sigma",
+  ylab = "sigma[1]",
   xlab = "iteration",
   cex.lab = 1.2
 )
 
+matplot(
+  cbind(
+    out.lit$samples[[1]][, "sigma[2]"],
+    out.lit$samples[[2]][, "sigma[2]"],
+    out.lit$samples[[3]][, "sigma[2]"],
+    out.lit$samples[[4]][, "sigma[2]"],
+    out.lit$samples[[5]][, "sigma[2]"]
+  ),
+  type = "l",
+  ylab = "sigma[2]",
+  xlab = "iteration",
+  cex.lab = 1.2
+)
+
+
+matplot(
+  cbind(
+    out.lit$samples[[1]][, "sigma[3]"],
+    out.lit$samples[[2]][, "sigma[3]"],
+    out.lit$samples[[3]][, "sigma[3]"],
+    out.lit$samples[[4]][, "sigma[3]"],
+    out.lit$samples[[5]][, "sigma[3]"]
+  ),
+  type = "l",
+  ylab = "sigma[3]",
+  xlab = "iteration",
+  cex.lab = 1.2
+)
 
 
 ##using coda package for additional diagnostics
@@ -246,14 +279,21 @@ outSum.lit
 
 
 # sample data
-lit_data <- data.frame(
-  treatments = c("Témoin", "Partielle", "Totale"),
+lit_data_sum <- data.frame(
   mean = c(outSum.lit[1:3, 1]),
   lower = c(outSum.lit[1:3, 3]),
   upper = c(outSum.lit[1:3, 4])
 )
 
-lit_data
+lit_data<- as.data.frame(lit_data_sum[1,])
+lit_data[2,]<- lit_data_sum[1,]+lit_data_sum[2,]
+lit_data[3,]<- lit_data_sum[1,]+lit_data_sum[3,]
+
+row.names(lit_data)<- row.names(lit_data_sum)
+
+lit_data$treatments<- c("Témoin", "Partielle", "Totale")
+
+
 ##graphics to compare groups, IC 95%
 
 par(mfcol = c(1, 1),
@@ -312,7 +352,7 @@ par(mfcol = c(1, 1),
 plot(
   NA,
   xlim = c(0, 4),
-  ylim = c(-5, 010),
+  ylim = c(0, 8),
   main = "Profondeur de litière par coupe forestières",
   xlab = "Coupes forestières",
   ylab = "Profondeur (cm)",
