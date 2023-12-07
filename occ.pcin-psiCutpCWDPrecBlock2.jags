@@ -1,0 +1,56 @@
+
+
+model {
+
+ ##prior
+ #prior for psi
+ for(k in 1:ngroups) {
+    psi[k] ~ dunif(0, 1)
+ }
+
+ #prior for p
+ alpha0.pcin ~ dnorm(0, 0.01)
+ alpha.precip.pcin ~ dnorm(0, 0.01)
+ alpha.cwd.pcin ~ dnorm(0, 0.01)
+
+ ##random effects of block
+ for(m in 1:nblocks) {
+    alpha.block[m] ~ dnorm(0, tau.block)
+ }
+
+ tau.block <- pow(sigma.block, -2)
+ sigma.block ~ dunif(0, 10)
+
+
+ ##likelihood
+ ##first loop over nsites
+ for (i in 1:nsites) {
+    ##True occupancy z at site i (biological process)
+    z[i] ~ dbern(psi[Group[i]])
+
+    ##linear predictor of psi
+    #logit.psi[i] <- beta0.pcin + beta.litter.pcin * Litter[i]
+    #psi[i] <- exp(logit.psi[i])/(1 + exp(logit.psi[i]))
+
+
+    ##second loop over nvisits
+    for (j in 1:nvisits) {
+        ##linear predictor of p
+        logit.p[i, j] <- alpha0.pcin + alpha.cwd.pcin * CWD[i] + alpha.precip.pcin * Precip[i, j] + alpha.block[Block[i]]
+        p[i, j] <- exp(logit.p[i, j])/(1 + exp(logit.p[i, j]))
+
+        ##p = 0 if site not occupied
+        eff.p[i, j] <- z[i] * p[i, j]
+
+        ##detection at i j (observation process)
+        y[i, j] ~ dbern(eff.p[i, j])
+
+      }
+ }
+
+## derived parameter
+ ##number of occupied sites among nsites
+ finiteOcc <- sum(z[])
+}
+
+

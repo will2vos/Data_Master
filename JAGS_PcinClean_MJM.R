@@ -155,7 +155,7 @@ params <- c("psi",
 
 ## MCMC settings
 ## chains
-nc <- 3#5
+nc <- 5
 
 ## iterations
 ni <- 200000

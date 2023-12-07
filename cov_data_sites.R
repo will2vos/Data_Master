@@ -1,10 +1,7 @@
 # Transformation des mesures de débris ligneux en volume de débris ligneux (CWD)
 
 # import data
-CWD <-
-  read.csv("cov_cwd_mesures.csv",
-           header = TRUE,
-           stringsAsFactors = TRUE)
+CWD <- read.csv("cov_cwd_mesures.csv", header = TRUE, stringsAsFactors = TRUE)
 
 # transform in factor
 CWD$Analogue <- as.factor(CWD$Analogue)
@@ -21,8 +18,8 @@ CWD$area.api <- pi * (CWD$Diam_api_m / 2) ^ 2
 CWD$length_m <- CWD$Longueur / 100
 
 # calcul CWD in m3
-CWD$cwd <- (CWD$length_m / 12) * (5 * CWD$Diam_bas_m + 5 * CWD$Diam_api_m +
-                                    2 * sqrt(CWD$Diam_bas_m * CWD$Diam_api_m))
+CWD$cwd <- (CWD$length_m / 12) * (5 * CWD$area.bas + 5 * CWD$area.api +
+                                    2 * sqrt(CWD$area.bas * CWD$area.api))
 
 #import basic informations for 60 sites
 Data60 <-
@@ -38,15 +35,14 @@ colnames(CWD)[1] <- "sites"
 Data60$CWD <- with(tapply(cwd, INDEX = sites, FUN = sum), data = CWD)
 
 #importation data litter depth
-litt <-
-  read.csv("cov_litter_mesures.csv",
+litt <- read.csv("cov_litter_mesures.csv",
            header = TRUE,
            stringsAsFactors = TRUE)
+
 Data60$litter <- litt$Moyenne
 
 #importation data canopy at 130 cm from ground
-Canop_130 <-
-  read.csv("cov_canop130_mesures.csv",
+Canop_130 <- read.csv("cov_canop130_mesures.csv",
            header = TRUE,
            stringsAsFactors = TRUE)
 Data60$canopy <- Canop_130$Ouverture
@@ -73,7 +69,7 @@ Can130_sd <- sd(Canop130, na.rm = TRUE)
 canop130_std <- as.data.frame((Canop130 - Can130_mean)/Can130_sd)
 Data60$canopy_STD<- canop130_std$V1
 
-# write.csv(Data60, "ObsCov.csv", row.names = FALSE)
+write.csv(Data60, "ObsCov.csv", row.names = FALSE)
 
 # inspect correlations
 
