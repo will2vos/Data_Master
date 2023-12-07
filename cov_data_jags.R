@@ -78,3 +78,5 @@ data.JAGS <- list(
 )
 
 save(data.JAGS, file = "SEM_data_JAGS.RData")
+
+load("SEM_data_JAGS.RData")

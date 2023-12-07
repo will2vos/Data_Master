@@ -1,0 +1,25 @@
+
+model {
+for(k in 1:ngroups) {
+psi[k] ~ dunif(0, 1)
+}
+alpha0.pcin ~ dnorm(0, 0.01)
+alpha.precip.pcin ~ dnorm(0, 0.01)
+alpha.cwd.pcin ~ dnorm(0, 0.01)
+for(m in 1:nblocks) {
+alpha.block[m] ~ dnorm(0, tau.block)
+}
+tau.block <- pow(sigma.block, -2)
+sigma.block ~ dunif(0, 10)
+for (i in 1:nsites) {
+z[i] ~ dbern(psi[Group[i]])
+for (j in 1:nvisits) {
+logit.p[i, j] <- alpha0.pcin + alpha.cwd.pcin * CWD[i] + alpha.precip.pcin * Precip[i, j] + alpha.block[Block[i]]
+p[i, j] <- exp(logit.p[i, j])/(1 + exp(logit.p[i, j]))
+eff.p[i, j] <- z[i] * p[i, j]
+y[i, j] ~ dbern(eff.p[i, j])
+}
+}
+finiteOcc <- sum(z[])
+}
+
