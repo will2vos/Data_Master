@@ -1,37 +1,13 @@
-#positionnement
-setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
 
-# load(file = "coll_data_JAGS.RData")
-# str(coll.data.JAGS)
-
+# importation du jeu de données
 load("SEM_data_JAGS.RData")
-
-hist(data.JAGS$coll$weight)
-
-identical(data.JAGS$coll$site, data.JAGS$Obs_cov$ID)
-paste(data.JAGS$coll$sites, "--", data.JAGS$Obs_cov$ID)
-
-# ##order rows according to site
-# coll.data.JAGS.ORD <- coll.data.JAGS
-# coll.data.JAGS.ORD$Obs_cov <- coll.data.JAGS$Obs_cov[order(coll.data.JAGS$Obs_cov$ID), ]
-# coll.data.JAGS.ORD$biomass <- coll.data.JAGS$biomass[order(coll.data.JAGS$biomass$sites), ]
-# 
-# identical(coll.data.JAGS.ORD$biomass$sites, coll.data.JAGS.ORD$Obs_cov$ID)
-# 
-# ##collembola biomass 
-# Biomasse <- coll.data.JAGS.ORD$biomass$weight
-# 
-# ##cutting treatment
-# Coupe <- coll.data.JAGS.ORD$Obs_cov$Coupe
-# ##numeric ID to select groups
-# CoupeNum <- as.numeric(coll.data.JAGS.ORD$Obs_cov$Coupe)
-
 
 ##collembola biomass
 Biomasse <- data.JAGS$coll$weight
 
 ##cutting treatment
 Coupe <- data.JAGS$Obs_cov$Coupe
+
 ##numeric ID to select groups
 CoupeNum <- as.numeric(data.JAGS$Obs_cov$Coupe)
 #3=témoin, 1=partielle, 2=totale
@@ -99,7 +75,6 @@ writeLines(modelstring, con = "Coll_BioMasse_Cut-hetVar-block.jags")
 
 
 ## list of data
-
 lin.data <- list(
   Biomasse = as.numeric(Biomasse),
   Cutpartial = as.numeric(Cutpartial),
@@ -155,14 +130,12 @@ out.coll <- jags(data = lin.data,
                  n.adapt = 10000)
 
 
-# save(out.coll, file = "out_coll_100K50Kb_BMxCut_hetVar.17oct23.Rdata")
-# save(out.coll, file = "out_coll_100K50Kb_BMxCut_hetVar.23oct23.Rdata")
-# 
-# load("out_coll_100K50Kb_BMxCut_hetVar.Rdata")
 
-# load("out_coll_100K50Kb_BMxCut_hetVar.17oct23.Rdata")
 
-save(out.coll, file = "out_coll_100K50Kb_BMxCut_hetVar_blockRE.Rdata")
+
+
+# save(out.coll, file = "out_coll_100K50Kb_BMxCut_hetVar_blockRE.Rdata")
+load("out_coll_100K50Kb_BMxCut_hetVar_blockRE.Rdata")
 
 print(out.coll, digits = 3)
 
@@ -176,57 +149,69 @@ out.coll$summary[c("beta0",
 hist(out.coll$summary[, "Rhat"])
 any(out.coll$summary[, "Rhat"] > 1.1)
 
-par(mfrow = c(2, 3), 
-    mar = c(4, 4, 2, 2))
 
-matplot(cbind(out.coll$samples[[1]][, "beta0"], 
-              out.coll$samples[[2]][, "beta0"], 
-              out.coll$samples[[3]][, "beta0"],
-              out.coll$samples[[4]][, "beta0"],
-              out.coll$samples[[5]][, "beta0"]),
-        type = "l", 
-        ylab = "beta0", xlab = "iteration", cex.lab = 1.2)
+##to view some diagnostics
+library(mcmcplots)
+mcmcplot(out.coll$samples)
 
-matplot(cbind(out.coll$samples[[1]][, "beta.Cutpartial"], 
-              out.coll$samples[[2]][, "beta.Cutpartial"], 
-              out.coll$samples[[3]][, "beta.Cutpartial"],
-              out.coll$samples[[4]][, "beta.Cutpartial"],
-              out.coll$samples[[5]][, "beta.Cutpartial"]),
-        type = "l", 
-        ylab = "beta.Cutpartial", xlab = "iteration", cex.lab = 1.2)
-
-matplot(cbind(out.coll$samples[[1]][, "beta.Cutclear"], 
-              out.coll$samples[[2]][, "beta.Cutclear"], 
-              out.coll$samples[[3]][, "beta.Cutclear"],
-              out.coll$samples[[4]][, "beta.Cutclear"],
-              out.coll$samples[[5]][, "beta.Cutclear"]),
-        type = "l", 
-        ylab = "beta.Cutclear", xlab = "iteration", cex.lab = 1.2)
-
-matplot(cbind(out.coll$samples[[1]][, "sigma[1]"], 
-              out.coll$samples[[2]][, "sigma[1]"], 
-              out.coll$samples[[3]][, "sigma[1]"],
-              out.coll$samples[[4]][, "sigma[1]"],
-              out.coll$samples[[5]][, "sigma[1]"]),
-        type = "l", 
-        ylab = "sigma[1]", xlab = "iteration", cex.lab = 1.2)
-
-matplot(cbind(out.coll$samples[[1]][, "sigma[2]"], 
-              out.coll$samples[[2]][, "sigma[2]"], 
-              out.coll$samples[[3]][, "sigma[2]"],
-              out.coll$samples[[4]][, "sigma[2]"],
-              out.coll$samples[[5]][, "sigma[2]"]),
-        type = "l", 
-        ylab = "sigma[2]", xlab = "iteration", cex.lab = 1.2)
+##trace plots
+jagsUI:::traceplot(out.coll, parameters = c("beta0","beta.Cutpartial",
+                                            "beta.Cutclear"))
+jagsUI:::traceplot(out.coll, parameters = c("sigma[1]","sigma[2]","sigma[3]"))
 
 
-matplot(cbind(out.coll$samples[[1]][, "sigma[3]"], 
-              out.coll$samples[[2]][, "sigma[3]"], 
-              out.coll$samples[[3]][, "sigma[3]"],
-              out.coll$samples[[4]][, "sigma[3]"],
-              out.coll$samples[[5]][, "sigma[3]"]),
-        type = "l", 
-        ylab = "sigma[3]", xlab = "iteration", cex.lab = 1.2)
+
+# par(mfrow = c(2, 3), 
+#     mar = c(4, 4, 2, 2))
+# 
+# matplot(cbind(out.coll$samples[[1]][, "beta0"], 
+#               out.coll$samples[[2]][, "beta0"], 
+#               out.coll$samples[[3]][, "beta0"],
+#               out.coll$samples[[4]][, "beta0"],
+#               out.coll$samples[[5]][, "beta0"]),
+#         type = "l", 
+#         ylab = "beta0", xlab = "iteration", cex.lab = 1.2)
+# 
+# matplot(cbind(out.coll$samples[[1]][, "beta.Cutpartial"], 
+#               out.coll$samples[[2]][, "beta.Cutpartial"], 
+#               out.coll$samples[[3]][, "beta.Cutpartial"],
+#               out.coll$samples[[4]][, "beta.Cutpartial"],
+#               out.coll$samples[[5]][, "beta.Cutpartial"]),
+#         type = "l", 
+#         ylab = "beta.Cutpartial", xlab = "iteration", cex.lab = 1.2)
+# 
+# matplot(cbind(out.coll$samples[[1]][, "beta.Cutclear"], 
+#               out.coll$samples[[2]][, "beta.Cutclear"], 
+#               out.coll$samples[[3]][, "beta.Cutclear"],
+#               out.coll$samples[[4]][, "beta.Cutclear"],
+#               out.coll$samples[[5]][, "beta.Cutclear"]),
+#         type = "l", 
+#         ylab = "beta.Cutclear", xlab = "iteration", cex.lab = 1.2)
+# 
+# matplot(cbind(out.coll$samples[[1]][, "sigma[1]"], 
+#               out.coll$samples[[2]][, "sigma[1]"], 
+#               out.coll$samples[[3]][, "sigma[1]"],
+#               out.coll$samples[[4]][, "sigma[1]"],
+#               out.coll$samples[[5]][, "sigma[1]"]),
+#         type = "l", 
+#         ylab = "sigma[1]", xlab = "iteration", cex.lab = 1.2)
+# 
+# matplot(cbind(out.coll$samples[[1]][, "sigma[2]"], 
+#               out.coll$samples[[2]][, "sigma[2]"], 
+#               out.coll$samples[[3]][, "sigma[2]"],
+#               out.coll$samples[[4]][, "sigma[2]"],
+#               out.coll$samples[[5]][, "sigma[2]"]),
+#         type = "l", 
+#         ylab = "sigma[2]", xlab = "iteration", cex.lab = 1.2)
+# 
+# 
+# matplot(cbind(out.coll$samples[[1]][, "sigma[3]"], 
+#               out.coll$samples[[2]][, "sigma[3]"], 
+#               out.coll$samples[[3]][, "sigma[3]"],
+#               out.coll$samples[[4]][, "sigma[3]"],
+#               out.coll$samples[[5]][, "sigma[3]"]),
+#         type = "l", 
+#         ylab = "sigma[3]", xlab = "iteration", cex.lab = 1.2)
 
 
 ##using coda package for additional diagnostics
@@ -238,6 +223,7 @@ outmc <- mcmc.list(out.coll$samples[[1]],
                    out.coll$samples[[4]],
                    out.coll$samples[[5]])
 
+
 ##save summary in object
 coda.out <- summary(outmc)
 range(coda.out$statistics[, "Time-series SE"]/coda.out$statistics[, "SD"])
@@ -247,107 +233,54 @@ range(coda.out$statistics[, "Time-series SE"]/coda.out$statistics[, "SD"])
 par(mfcol = c(1, 1),
     mar = c(5.1, 5.1, 4.1, 4.1))
 
-diff.1v2 <- out.coll$sims.list$beta0 -
+diff.1v2.coll <- out.coll$sims.list$beta0 -
   out.coll$sims.list$beta.Cutpartial
-hist(diff.1v2, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
+hist(diff.1v2.coll, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
      xlab = "Témoin vs coupe partielle",
      ylab = "Fréquence"
 )
-quant1v2 <- quantile(diff.1v2, probs = c(0.025, 0.975))
+quant1v2.coll <- quantile(diff.1v2.coll, probs = c(0.025, 0.975))
 abline(
-  v = quant1v2,
+  v = quant1v2.coll,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant1v2
+quant1v2.coll
 
-diff.1v3 <- out.coll$sims.list$beta0 -
+diff.1v3.coll <- out.coll$sims.list$beta0 -
   out.coll$sims.list$beta.Cutclear
-hist(diff.1v3, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
+hist(diff.1v3.coll, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
      xlab = "Témoin vs coupe totale",
      ylab = "Fréquence")
-quant1v3 <- quantile(diff.1v3, probs = c(0.025, 0.975))
+quant1v3.coll <- quantile(diff.1v3.coll, probs = c(0.025, 0.975))
 abline(
-  v = quant1v3,
+  v = quant1v3.coll,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant1v3
+quant1v3.coll
 
-diff.2v3 <- out.coll$sims.list$beta.Cutpartial -
+diff.2v3.coll <- out.coll$sims.list$beta.Cutpartial -
   out.coll$sims.list$beta.Cutclear
-hist(diff.2v3, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
+hist(diff.2v3.coll, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
      xlab = "Coupe partielle vs coupe totale",
      ylab = "Fréquence")
-quant2v3 <- quantile(diff.2v3, probs = c(0.025, 0.975))
+quant2v3.coll <- quantile(diff.2v3.coll, probs = c(0.025, 0.975))
 abline(
-  v = quant2v3,
+  v = quant2v3.coll,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant2v3
-
-
-##graphics to compare groups, IC 90%
-
-par(mfrow = c(1, 1))
-
-diff.1v2 <- out.coll$sims.list$beta0 -
-  out.coll$sims.list$beta.Cutpartial
-hist(diff.1v2, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
-     xlab = "Témoin vs coupe partielle",
-     ylab = "Fréquence"
-)
-quant1v2 <- quantile(diff.1v2, probs = c(0.05, 0.95))
-abline(
-  v = quant1v2,
-  lty = 2,
-  col = "red",
-  lwd = 3
-)
-quant1v2
-
-diff.1v3 <- out.coll$sims.list$beta0 -
-  out.coll$sims.list$beta.Cutclear
-hist(diff.1v3, main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
-     xlab = "Témoin vs coupe totale",
-     ylab = "Fréquence")
-quant1v3 <- quantile(diff.1v3, probs = c(0.05, 0.95))
-abline(
-  v = quant1v3,
-  lty = 2,
-  col = "red",
-  lwd = 3
-)
-quant1v3
-
-diff.2v3 <- out.coll$sims.list$beta.Cutpartial -
-  out.coll$sims.list$beta.Cutclear
-hist(diff.2v3, 
-     main = "Différence des distributions de postérieurs, \npour la probabilité d'occupation des collemboles",
-     xlab = "Coupe partielle vs coupe totale",
-     ylab = "Fréquence")
-
-quant2v3 <- quantile(diff.2v3, probs = c(0.05, 0.95))
-abline(
-  v = quant2v3,
-  lty = 2,
-  col = "red",
-  lwd = 3
-)
-quant2v3
-
-
+quant2v3.coll
 
 
 ## graphic biomass ~ cut
 
 outSum.coll <-
   out.coll$summary [, c("mean", "sd", "2.5%", "97.5%", "Rhat")]
-outSum.coll
 
 # sample data
 coll_data <- data.frame(
@@ -363,41 +296,39 @@ par(mfcol = c(1, 1),
     mar = c(5.1, 5.1, 4.1, 4.1))
 
 
-# Create a  plot
-plot(
-  NA,
-  xlim = c(0, 4),
-  ylim = c(0, 40),
-  main = "Collemboles",
-  xlab = "Coupes forestières",
-  ylab = expression(paste("Biomasse (", mu, "g)")),
-  xaxt = "n",
-  cex.axis = 1.2,
-  cex.lab = 1.2,
-  cex.main = 1.5)
-
-# Add lines for each treatment
-segments(
-  x0 = 1:3,
-  y0 = coll_data$lower,
-  1:3,
-  coll_data$upper,
-  col = "black",
-  lwd = 2
-)
-
-# Add points for mean occupation probabilities
-points(
-  x = 1:3,
-  y = coll_data$mean,
-  pch = 19,
-  col = "black",
-  lwd = 4
-)
-
-axis(1, at = 1:3, labels = coll_data$treatments, lwd = 1, padj = 0.5)
-
-
+# # Create a  plot
+# plot(
+#   NA,
+#   xlim = c(0, 4),
+#   ylim = c(0, 40),
+#   main = "Collemboles",
+#   xlab = "Coupes forestières",
+#   ylab = expression(paste("Biomasse (", mu, "g)")),
+#   xaxt = "n",
+#   cex.axis = 1.2,
+#   cex.lab = 1.2,
+#   cex.main = 1.5)
+# 
+# # Add lines for each treatment
+# segments(
+#   x0 = 1:3,
+#   y0 = coll_data$lower,
+#   1:3,
+#   coll_data$upper,
+#   col = "black",
+#   lwd = 2
+# )
+# 
+# # Add points for mean occupation probabilities
+# points(
+#   x = 1:3,
+#   y = coll_data$mean,
+#   pch = 19,
+#   col = "black",
+#   lwd = 4
+# )
+# 
+# axis(1, at = 1:3, labels = coll_data$treatments, lwd = 1, padj = 0.5)
 
 
 #autocorrelation

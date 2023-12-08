@@ -1,0 +1,17 @@
+# Fdb version 4
+["pdflatex"] 1701979361 "/Users/williamdevos/Documents/Maitrise/Data.Git/ulthese/gabarit-maitrise-articles.tex" "gabarit-maitrise-articles.pdf" "gabarit-maitrise-articles" 1701979362 2
+  "/Users/williamdevos/Documents/Maitrise/Data.Git/ulthese/gabarit-maitrise-articles.tex" 1701977766 4431 df09b5a688c53493527f7e83547edab7 ""
+  "/Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty" 1644112042 7237 bdd120a32c8fdb4b433cf9ca2e7cd98a ""
+  "/Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifxetex.sty" 1572645307 488 4565444a3e75e59cb2702dc42e18f482 ""
+  "/Users/williamdevos/Library/TinyTeX/texmf-dist/web2c/texmf.cnf" 1697057529 41009 84b61f42d16d06bedb915f57aa2374cf ""
+  "/Users/williamdevos/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt" 1700689477 6805390 ca70cfc513a3427e691a7ae44ea7a8a4 ""
+  "/Users/williamdevos/Library/TinyTeX/texmf.cnf" 1681332753 708 85fd07691b6294ba94c59dbc62380410 ""
+  "gabarit-maitrise-articles.aux" 1701979361 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "gabarit-maitrise-articles.tex" 1701977766 4431 df09b5a688c53493527f7e83547edab7 ""
+  "memoir.cls" 0 -1 0 ""
+  "ulthese.cls" 1701977766 17184 957332c6b5ae9e92bf3f31029123a7fd ""
+  (generated)
+  "gabarit-maitrise-articles.aux"
+  "gabarit-maitrise-articles.log"
+  "gabarit-maitrise-articles.pdf"
+  (rewritten before read)

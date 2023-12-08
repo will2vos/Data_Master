@@ -1,142 +1,12 @@
 
-#positionnement
-setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
-#setwd("/home/mazerolm/Documents/Supervision/Devos/Scripts/2023-07-07")
-
-# ### Importation des dataframes de detections des carabes
-# 
-# ## TOUT LES CARABES
-# det_car_all<- read.csv("Car_detection.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_all<- det_car_all[,-1]
-# 
-# 
-# ## TROIS GUILDES ~ MICROHABITAT
-# # 3 guildes - Forest
-# car_det_for_3<- read.csv("car_det_for_3.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_for3<- car_det_for_3[,-1]
-# 
-# # 3 guildes - Open
-# car_det_open_3<- read.csv("car_det_open_3.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_open3<- car_det_open_3[,-1]
-# 
-# # 3 guildes - Aquatic
-# car_det_aqua_3<- read.csv("car_det_aqua_3.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_aqua3<- car_det_aqua_3[,-1]
-# 
-# 
-# 
-# ## DEUX GUILDES ~ MICROHABITAT
-# # 2 guildes - Forest
-# car_det_for_2<- read.csv("car_det_for_2.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_for2<- car_det_for_2[,-1]
-# 
-# # 2 guildes - Open
-# car_det_open_2<- read.csv("car_det_open_2.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_open2<- car_det_open_2[,-1]
-# 
-# 
-# 
-# ## DEUX GUILDES ~ TAILLE
-# # 2 guildes - Large
-# car_det_large<- read.csv("car_det_large.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_large<- car_det_large[,-1]
-# 
-# # 2 guildes - Small
-# car_det_small<- read.csv("car_det_small.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_small<- car_det_small[,-1]
-# 
-# 
-# ## DEUX GUILDES ~ PREY + COMPETITOR
-# # 2 guildes - Prey
-# car_det_prey<- read.csv("car_det_prey.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_prey<- car_det_prey[,-1]
-# 
-# # 2 guildes - Competitor
-# car_det_comp<- read.csv("car_det_comp.csv", header = TRUE, stringsAsFactors = TRUE)
-# car_comp<- car_det_comp[,-1]
-# 
-# 
-# 
-# ## importation variable de site
-# Obs_cov<- read.csv("ObsCov.csv", header = TRUE, stringsAsFactors = TRUE)
-# 
-# 
-# ## importation variable de detection
-# #matrice des precipitation en binaire
-# precip.3D.bin<- read.csv("precip.3D.bin.csv",header = TRUE,stringsAsFactors = TRUE)
-# precip<-precip.3D.bin[,-1]
-# 
-# # matrice du volume de débris ligneux par site pour mesurer les effets sur la detection
-# # données standardisés
-# CWD.STD<- read.csv("cwd_tot_std.csv",header = TRUE,stringsAsFactors = TRUE)
-# CWD.STD<-CWD.STD[,-1]
-# 
-# 
-# car.data.JAGS<- list(car_all = car_all,
-#                      car_for3 = car_for3,
-#                      car_open3 = car_open3,
-#                      car_aqua3 = car_aqua3,
-#                      car_for2 = car_for2,
-#                      car_open2 = car_open2,
-#                      car_large = car_large,
-#                      car_small = car_small,
-#                      car_prey = car_prey,
-#                      car_comp = car_comp,
-#                      precip = precip,
-#                      Obs_cov = Obs_cov,
-#                      CWD.STD = CWD.STD)
-# 
-# save(car.data.JAGS, file = "car_data_JAGS.RData")
-
+# importation du jeu de données
 load("SEM_data_JAGS.RData")
-
-# load("car_data_JAGS.RData")
-# str(car.data.JAGS)
-
-
-## choix du data.frame de detection à utiliser
-
-# ## Tous les carabes
-# car <- car.data.JAGS$car_all
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde milieu forestier ( division en trois guildes)
-# car <- car.data.JAGS$car_for3
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde milieu ouvert ( division en trois guildes)
-# car <- car.data.JAGS$car_open3
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde milieu aquatique ( division en trois guildes)
-# car <- car.data.JAGS$car_aqua3
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-#  
-#  
-# ## Guilde milieu forestier ( division en deux guildes)
-# car <- car.data.JAGS$car_for2
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde milieu ouvert ( division en deux guildes)
-# car <- car.data.JAGS$car_open2
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde grands carabes ( division en deux guildes)
-# car <- car.data.JAGS$car_large
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-# 
-# ## Guilde petits carabes ( division en deux guildes)
-# car <- car.data.JAGS$car_small
-# mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
 
 ## Guilde proies ( division en deux guildes)
 car <- data.JAGS$car_prey[,-1]
-mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
 
 # Guilde competiteurs ( division en deux guildes)
 car <- data.JAGS$car_comp[,-1]
-mean(apply(car, 1, FUN = function(i) ifelse(sum(i) > 0, 1, 0)))
-
 
 ##occupancy variables
 Coupe <- data.JAGS$Obs_cov$Coupe
@@ -145,6 +15,7 @@ Coupe <- data.JAGS$Obs_cov$Coupe
 Precip <- data.JAGS$precip[,-1]
 CWD <- data.JAGS$Obs_cov$CWD_STD
 BlockOrig <- data.JAGS$Obs_cov$Bloc
+
 ##converted to numeric variable
 Block <- as.numeric(BlockOrig)
 
@@ -215,7 +86,7 @@ model {
 
 
 "
-writeLines(modelstring, con = "occ.car-psiCutpCWDPrecBlock2.jags")
+#writeLines(modelstring, con = "occ.car-psiCutpCWDPrecBlock2.jags")
 
 ## named list
 linData.car <- list(y = as.matrix(car), 
@@ -263,13 +134,13 @@ params <- c("psi",
 nc <- 5
 
 ## iterations
-ni <- 100000
+ni <- 200000
 
 ## burn-in
-nb<- 50000
+nb <- 150000
 
 ## thinning rate (save 1 obs per 5 iterations)
-nt <-5
+nt <-10
 
 library(jagsUI)
 
@@ -282,16 +153,23 @@ out.occ.car <- jags(data = linData.car,
                     n.burnin = nb,
                     n.iter = ni,
                     n.adapt = 10000)
-# save(out.occ.car, file = "out.occ.car-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
-# save(out.occ.car, file = "out.occ.car-PsiCut-PCWDPrecBlock.17oct23.Rdata") #prey
-save(out.occ.car, file = "out.occ.car.comp-PsiCut-PCWDPrecBlock.17oct23.Rdata") #comp
-load("out.occ.car-PsiCut-PCWDPrecBlock.17oct23.Rdata") # prey
-# load("out.occ.car-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
+
+## out.occ.car prey
+# save(out.occ.car, file = "out.occ.car.prey-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
+load("out.occ.car.prey-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
+
+## out.occ.car competitor
+# save(out.occ.car, file = "out.occ.car.comp-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
+load("out.occ.car.prey-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
 
 print(out.occ.car, 4)
 
 outSumcar <- out.occ.car$summary [,c("mean", "sd", "2.5%", "97.5%", "Rhat")]
 round(outSumcar, 4)
+
+##to view some diagnostics
+library(mcmcplots)
+mcmcplot(out.occ.car$samples)
 
 ##trace plots
 jagsUI:::traceplot(out.occ.car, parameters = c("psi"))
@@ -337,49 +215,46 @@ any(Ratio.car > 0.05)
 
 
 ##difference between groups
-diff.1v2 <- out.occ.car$sims.list$psi[, 1] -
+diff.1v2.car <- out.occ.car$sims.list$psi[, 1] -
   out.occ.car$sims.list$psi[, 2]
-hist(diff.1v2)
-quant1v2 <- quantile(diff.1v2, probs = c(0.025, 0.975))
+hist(diff.1v2.car)
+quant1v2.car <- quantile(diff.1v2.car, probs = c(0.025, 0.975))
 abline(
-  v = quant1v2,
+  v = quant1v2.car,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant1v2
+quant1v2.car
 
 
 
-diff.1v3 <- out.occ.car$sims.list$psi[, 1] -
+diff.1v3.car <- out.occ.car$sims.list$psi[, 1] -
   out.occ.car$sims.list$psi[, 3]
-hist(diff.1v3)
-quant1v3 <- quantile(diff.1v3, probs = c(0.025, 0.975))
+hist(diff.1v3.car)
+quant1v3.car <- quantile(diff.1v3.car, probs = c(0.025, 0.975))
 abline(
-  v = quant1v3,
+  v = quant1v3.car,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant1v3
+quant1v3.car
 
-diff.2v3 <- out.occ.car$sims.list$psi[, 2] -
+diff.2v3.car <- out.occ.car$sims.list$psi[, 2] -
   out.occ.car$sims.list$psi[, 3]
-hist(diff.2v3)
-quant2v3 <- quantile(diff.2v3, probs = c(0.025, 0.975))
+hist(diff.2v3.car)
+quant2v3.car <- quantile(diff.2v3.car, probs = c(0.025, 0.975))
 abline(
-  v = quant2v3,
+  v = quant2v3.car,
   lty = 2,
   col = "red",
   lwd = 3
 )
-quant1v3
+quant1v3.car
 
 
 ## graphique
-
-# load("out.occ.prey.100K50Kb.Rdata")
-load("out.occ.car-PsiCut-PCWDPrecBlock.17oct23.Rdata")
 
 outSum.car <-
   out.occ.car$summary [, c("mean", "sd", "2.5%", "97.5%", "Rhat")]
@@ -408,18 +283,6 @@ plot(
   xaxt = "n",
   cex.axis = 1,
   cex.lab = 1)
-
-# # Create a  plot
-# plot(
-#   NA,
-#   xlim = c(0, 4),
-#   ylim = c(0, 1),
-#   xlab = "Treatments",
-#   ylab = "Occupation Probability",
-#   xaxt = "n",
-#   main = "Comparison of mean occupation probabilities\nbetween different cutting treatments"
-# )
-
 
 # Add lines for each treatment
 segments(

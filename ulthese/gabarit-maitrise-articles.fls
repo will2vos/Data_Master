@@ -1,0 +1,12 @@
+PWD /Users/williamdevos/Documents/Maitrise/Data.Git/ulthese
+INPUT /Users/williamdevos/Library/TinyTeX/texmf.cnf
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-dist/web2c/texmf.cnf
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT /Users/williamdevos/Documents/Maitrise/Data.Git/ulthese/gabarit-maitrise-articles.tex
+OUTPUT gabarit-maitrise-articles.log
+INPUT ./ulthese.cls
+INPUT ulthese.cls
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifxetex.sty
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/ifxetex.sty
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
+INPUT /Users/williamdevos/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
