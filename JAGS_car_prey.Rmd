@@ -1,3 +1,11 @@
+---
+title: "JAGS_car_prey"
+author: "William Devos"
+date: "2023-12-14"
+output: pdf_document
+---
+
+```{r}
 
 # importation du jeu de données
 load("SEM_data_JAGS.RData")
@@ -67,7 +75,8 @@ model {
     ##second loop over nvisits
     for (j in 1:nvisits) {
         ##linear predictor of p
-        logit.p[i, j] <- alpha0.car + alpha.cwd.car * CWD[i] + alpha.precip.car * Precip[i, j] + alpha.block[Block[i]]
+        logit.p[i, j] <- alpha0.car + alpha.cwd.car * CWD[i] 
+        + alpha.precip.car * Precip[i, j] + alpha.block[Block[i]]
         p[i, j] <- exp(logit.p[i, j])/(1 + exp(logit.p[i, j]))
 
         ##p = 0 if site not occupied
@@ -144,23 +153,22 @@ nt <-10
 
 library(jagsUI)
 
-out.occ.car <- jags(data = linData.car,
-                    inits = inits,
-                    parameters = params,
-                    model = "occ.car-psiCutpCWDPrecBlock.jags",
-                    n.thin = nt,
-                    n.chains = nc,
-                    n.burnin = nb,
-                    n.iter = ni,
-                    n.adapt = 10000)
+# out.occ.car <- jags(data = linData.car,
+#                     inits = inits,
+#                     parameters = params,
+#                     model = "occ.car-psiCutpCWDPrecBlock.jags",
+#                     n.thin = nt,
+#                     n.chains = nc,
+#                     n.burnin = nb,
+#                     n.iter = ni,
+#                     n.adapt = 10000)
+```
 
+
+```{r}
 ## out.occ.car prey
 # save(out.occ.car, file = "out.occ.car.prey-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
 load("out.occ.car.prey-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
-
-## out.occ.car competitor
-# save(out.occ.car, file = "out.occ.car.comp-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
-load("out.occ.car.comp-PsiCut-PCWDPrecBlock-200K150Kb.Rdata")
 
 print(out.occ.car, 4)
 
@@ -168,8 +176,8 @@ outSumcar <- out.occ.car$summary [,c("mean", "sd", "2.5%", "97.5%", "Rhat")]
 round(outSumcar, 4)
 
 ##to view some diagnostics
-library(mcmcplots)
-mcmcplot(out.occ.car$samples)
+# library(mcmcplots)
+# mcmcplot(out.occ.car$samples)
 
 ##trace plots
 jagsUI:::traceplot(out.occ.car, parameters = c("psi"))
@@ -179,7 +187,7 @@ jagsUI:::traceplot(out.occ.car, parameters = c("alpha0.car",
 jagsUI:::traceplot(out.occ.car, parameters = c("alpha.block", "sigma.block"))
 
 ##posterior density plots
-par(mfrow = c(1, 1))
+par(mfrow = c(2, 2))
 plot(density(out.occ.car$sims.list$psi[, 1]),
      main = "psi[1]")
 plot(density(out.occ.car$sims.list$psi[, 2]),
@@ -187,6 +195,7 @@ plot(density(out.occ.car$sims.list$psi[, 2]),
 plot(density(out.occ.car$sims.list$psi[, 3]),
      main = "psi[4]")
 
+par(mfrow = c(3, 3))
 plot(density(out.occ.car$sims.list$alpha0.car),
      main = "alpha0.car")
 plot(density(out.occ.car$sims.list$alpha.precip.car),
@@ -215,6 +224,7 @@ any(Ratio.car > 0.05)
 
 
 ##difference between groups
+par(mfrow = c(1, 1))
 diff.1v2.car <- out.occ.car$sims.list$psi[, 1] -
   out.occ.car$sims.list$psi[, 2]
 hist(diff.1v2.car)
@@ -307,3 +317,7 @@ points(
 
 axis(1, at = 1:3, labels = occ_data$treatments, lwd = 1, padj = 1)
 
+
+
+
+```

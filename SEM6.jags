@@ -1,0 +1,315 @@
+##SEM
+model {
+
+
+#######################
+##CWD
+##priors
+beta0.cwd ~ dnorm(0, 0.01)
+beta.Cutpartial.cwd ~ dnorm(0, 0.01)
+beta.Cutclear.cwd ~ dnorm(0, 0.01)
+
+##block random effect
+for(m in 1:nblocks) {
+   alpha.block.cwd[m] ~ dnorm(0, tau.block.cwd)
+}
+
+##variance of block
+tau.block.cwd <- pow(sigma.block.cwd, -2)
+sigma.block.cwd ~ dunif(0, 50)
+
+##allow each group to have different variance
+for(j in 1:3) {
+   tau.cwd[j] <- pow(sigma.cwd[j], -2)
+   sigma.cwd[j] ~ dunif(0, 150)
+}
+
+##iterate over each observation
+for (i in 1:nsites) {
+
+    ##linear predictor  
+    mu.cwd[i] <- beta0.cwd + beta.Cutpartial.cwd * Cutpartial[i] + 
+       beta.Cutclear.cwd * Cutclear[i] + alpha.block.cwd[Block[i]]
+
+    ##response
+    CWD[i] ~ dnorm(mu.cwd[i], tau.cwd[Group[i]])
+}
+
+
+##derived parameters
+for(i in 1:nsites) {
+    pred.cwd[i] <- mu.cwd[i]
+    res.cwd[i] <- CWD[i] - mu.cwd[i]
+    res.pearson.cwd[i] <- res.cwd[i]/sigma.cwd[Group[i]]
+}
+
+
+
+#######################
+##Canopy openness
+##priors
+beta0.can ~ dnorm(0, 0.01)
+beta.Cutpartial.can ~ dnorm(0, 0.01)
+beta.Cutclear.can ~ dnorm(0, 0.01)
+
+##block random effect
+for(m in 1:nblocks) {
+   alpha.block.can[m] ~ dnorm(0, tau.block.can)
+}
+
+##variance of block
+tau.block.can <- pow(sigma.block.can, -2)
+sigma.block.can ~ dunif(0, 50)
+
+##allow each group to have different variance
+for(j in 1:3) {
+   tau.can[j] <- pow(sigma.can[j], -2)
+   sigma.can[j] ~ dunif(0, 150)
+}
+
+##iterate over each observation
+for (i in 1:nsites) {
+
+    ##linear predictor  
+    mu.can[i] <- beta0.can + beta.Cutpartial.can * Cutpartial[i] + 
+       beta.Cutclear.can * Cutclear[i] + alpha.block.can[Block[i]]
+
+    ##response
+    Canopy[i] ~ dnorm(mu.can[i], tau.can[Group[i]])
+}
+
+
+##derived parameters
+for(i in 1:nsites) {
+    pred.can[i] <- mu.can[i]
+    res.can[i] <- Canopy[i] - mu.can[i]
+    res.pearson.can[i] <- res.can[i]/sigma.can[Group[i]]
+}
+
+
+
+#######################
+##Litter depth
+##priors
+beta0.lit ~ dnorm(0, 0.01)
+beta.Cutpartial.lit ~ dnorm(0, 0.01)
+beta.Cutclear.lit ~ dnorm(0, 0.01)
+
+##block random effect
+for(m in 1:nblocks) {
+   alpha.block.lit[m] ~ dnorm(0, tau.block.lit)
+}
+
+##variance of block
+tau.block.lit <- pow(sigma.block.lit, -2)
+sigma.block.lit ~ dunif(0, 50)
+
+##allow each group to have different variance
+##for(j in 1:3) {
+##   tau.lit[j] <- pow(sigma.lit[j], -2)
+##   sigma.lit[j] ~ dunif(0, 150)
+##}
+tau.lit <- pow(sigma.lit, -2)
+sigma.lit ~ dunif(0, 150)
+
+##iterate over each observation
+for (i in 1:nsites) {
+
+    ##linear predictor  
+    mu.lit[i] <- beta0.lit + beta.Cutpartial.lit * Cutpartial[i] + 
+       beta.Cutclear.lit * Cutclear[i] + alpha.block.lit[Block[i]]
+
+       ##response
+       ##Litter[i] ~ dnorm(mu.lit[i], tau.lit[Group[i]])
+       Litter[i] ~ dnorm(mu.lit[i], tau.lit)
+}
+
+
+##derived parameters
+for(i in 1:nsites) {
+    pred.lit[i] <- mu.lit[i]
+    res.lit[i] <- Litter[i] - mu.lit[i]
+    ##res.pearson.lit[i] <- res.lit[i]/sigma.lit[Group[i]]
+    res.pearson.lit[i] <- res.lit[i]/sigma.lit
+}
+
+
+
+
+
+
+######################
+##salamander component
+##priors for psi
+for(k in 1:ngroups) {
+   psi.sal[k] ~ dunif(0, 1)
+}
+
+##priors for p
+alpha0.sal ~ dnorm(0, 0.01)
+alpha.precip.sal ~ dnorm(0, 0.01)
+alpha.cwd.sal ~ dnorm(0, 0.01)
+
+##block random effect
+for(m in 1:nblocks) {
+   alpha.block.sal[m] ~ dnorm(0, tau.block.sal)
+}
+
+tau.block.sal <- pow(sigma.block.sal, -2)
+sigma.block.sal ~ dunif(0, 10)
+
+##salamander model
+for(i in 1:nsites) {
+   ##occupancy
+   z.sal[i] ~ dbern(psi.sal[Group[i]])
+   for(j in 1:nvisits) {
+      ##p
+      logit.p.sal[i, j] <- alpha0.sal + alpha.cwd.sal * CWD[i] + alpha.precip.sal * Precip[i, j] + alpha.block.sal[Block[i]]
+      p.sal[i, j] <- exp(logit.p.sal[i, j])/(1 + exp(logit.p.sal[i, j]))
+
+      eff.p.sal[i, j] <- z.sal[i] * p.sal[i, j]
+      y.sal[i, j] ~ dbern(eff.p.sal[i, j])
+   }
+}
+
+finiteOcc.sal <- sum(z.sal[])
+
+
+######################
+####carab beetles - prey
+##psi priors
+##for(k in 1:ngroups) {
+psi.beta0.car.prey ~ dnorm(0, 0.01)
+psi.beta.z.sal.car.prey ~ dnorm(0, 0.01)
+psi.beta.Cutpartial.car.prey ~ dnorm(0, 0.01)
+psi.beta.Cutclear.car.prey ~ dnorm(0, 0.01)
+
+##p priors
+alpha0.car.prey ~ dnorm(0, 0.01)
+alpha.precip.car.prey ~ dnorm(0, 0.01)
+alpha.cwd.car.prey ~ dnorm(0, 0.01)
+
+##block random effects
+for(m in 1:nblocks) {
+   alpha.block.car.prey[m] ~ dnorm(0, tau.block.car.prey)
+}
+
+tau.block.car.prey <- pow(sigma.block.car.prey, -2)
+sigma.block.car.prey ~ dunif(0, 10)
+
+for(i in 1:nsites) {
+   ##occupancy
+   logit(psi.car.prey[i]) <- psi.beta0.car.prey + psi.beta.z.sal.car.prey * z.sal[i] +
+    	psi.beta.Cutpartial.car.prey*Cutpartial[i] + psi.beta.Cutclear.car.prey*Cutclear[i]
+    	
+   z.car.prey[i] ~ dbern(psi.car.prey[i])
+
+   for(j in 1:nvisits) {
+      ##p
+      logit.p.car.prey[i, j] <- alpha0.car.prey + alpha.cwd.car.prey * CWD[i] + alpha.precip.car.prey * Precip[i, j]
+      + alpha.block.car.prey[Block[i]]
+      p.car.prey[i, j] <- exp(logit.p.car.prey[i, j])/(1 + exp(logit.p.car.prey[i, j]))
+
+      eff.p.car.prey[i, j] <- z.car.prey[i] * p.car.prey[i, j]
+      y.car.prey[i, j] ~ dbern(eff.p.car.prey[i, j])
+   }
+}
+
+finiteOcc.car.prey <- sum(z.car.prey[])
+
+
+
+######################
+####carab beetles - comp
+##psi priors
+##psi.beta0.car.comp ~ dnorm(0, 0.01)
+##psi.beta.z.sal.car.comp ~ dnorm(0, 0.01)
+##psi.beta.Cutpartial.car.comp ~ dnorm(0, 0.01)
+##psi.beta.Cutclear.car.comp ~ dnorm(0, 0.01)
+##psi priors
+for(k in 1:ngroups) {
+   psi.car.comp[k] ~ dunif(0, 1)
+}
+
+##p priors
+alpha0.car.comp ~ dnorm(0, 0.01)
+alpha.precip.car.comp ~ dnorm(0, 0.01)
+alpha.cwd.car.comp ~ dnorm(0, 0.01)
+
+##block random effects
+for(m in 1:nblocks) {
+   alpha.block.car.comp[m] ~ dnorm(0, tau.block.car.comp)
+}
+
+tau.block.car.comp <- pow(sigma.block.car.comp, -2)
+sigma.block.car.comp ~ dunif(0, 10)
+
+for(i in 1:nsites) {
+      ##occupancy
+      z.car.comp[i] ~ dbern(psi.car.comp[Group[i]])
+
+   	for(j in 1:nvisits) {
+      	   ##occupancy
+      	   logit.p.car.comp[i, j] <- alpha0.car.comp + alpha.cwd.car.comp * CWD[i] + alpha.precip.car.comp * Precip[i, j]
+           + alpha.block.car.comp[Block[i]]
+
+      	   ##p
+      	   p.car.comp[i, j] <- exp(logit.p.car.comp[i, j])/(1 + exp(logit.p.car.comp[i, j]))
+      	   eff.p.car.comp[i, j] <- z.car.comp[i] * p.car.comp[i, j]
+      	   y.car.comp[i, j] ~ dbern(eff.p.car.comp[i, j])
+      	}
+}
+
+finiteOcc.car.comp <- sum(z.car.comp[])
+
+
+#####################
+#####################
+##collembola data
+##priors
+beta0.coll ~ dnorm(0, 0.01)
+beta.Cutpartial.coll ~ dnorm(0, 0.01)
+beta.Cutclear.coll ~ dnorm(0, 0.01)
+beta.z.sal.coll ~ dnorm(0, 0.01)
+beta.z.car.prey.coll ~ dnorm(0, 0.01)
+beta.z.car.comp.coll ~ dnorm(0, 0.01)
+
+##block random effect
+for(m in 1:nblocks) {
+   alpha.block.coll[m] ~ dnorm(0, tau.block.coll)
+}
+
+tau.block.coll <- pow(sigma.block.coll, -2)
+sigma.block.coll ~ dunif(0, 50)
+
+##allow each group to have different variance
+for(j in 1:3) {
+   tau.coll[j] <- pow(sigma.coll[j], -2)
+   sigma.coll[j] ~ dunif(0, 150)
+}
+
+##iterate over each observation
+for (i in 1:nsites) {
+
+    ##linear predictor  
+    mu.coll[i] <- beta0.coll +
+    beta.Cutpartial.coll*Cutpartial[i] +
+    beta.Cutclear.coll*Cutclear[i] + beta.z.sal.coll*z.sal[i] +
+    beta.z.car.prey.coll*z.car.prey[i] +
+    beta.z.car.comp.coll*z.car.comp[i] + alpha.block.coll[Block[i]]
+
+    ##response
+    y.coll[i] ~ dnorm(mu.coll[i], tau.coll[Group[i]])
+}
+
+
+##derived parameters
+for(i in 1:nsites) {
+    pred.coll[i] <- mu.coll[i]
+    res.coll[i] <- y.coll[i] - mu.coll[i]
+    res.pearson[i] <- res.coll[i]/sigma.coll[Group[i]]
+}
+
+
+}
+

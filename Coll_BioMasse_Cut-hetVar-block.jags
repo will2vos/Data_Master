@@ -22,7 +22,8 @@ for(j in 1:3) {
 
   ## Likelihood
   for (i in 1:nsites) {
-     mu[i] <- beta0 + beta.Cutpartial*Cutpartial[i] + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
+     mu[i] <- beta0 + beta.Cutpartial*Cutpartial[i] 
+     + beta.Cutclear*Cutclear[i] + alpha.block[Block[i]]
 
      Biomasse[i] ~ dnorm(mu[i], tau[CoupeNum[i]])
   }
