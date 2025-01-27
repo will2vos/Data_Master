@@ -3,6 +3,8 @@
 
 ### demande special william ###
 
+*.Rhistory
+*.Rproj
 *.Rmd
 *.docx
 *.qmd
