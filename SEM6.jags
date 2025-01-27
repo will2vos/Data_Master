@@ -32,7 +32,7 @@ for (i in 1:nsites) {
        beta.Cutclear.cwd * Cutclear[i] + alpha.block.cwd[Block[i]]
 
     ##response
-    CWD[i] ~ dnorm(mu.cwd[i], tau.cwd[Group[i]])
+    CWD_tot[i] ~ dnorm(mu.cwd[i], tau.cwd[Group[i]])
 }
 
 
@@ -249,7 +249,7 @@ for(i in 1:nsites) {
       z.car.comp[i] ~ dbern(psi.car.comp[Group[i]])
 
    	for(j in 1:nvisits) {
-      	   ##occupancy
+      	   ##detection
       	   logit.p.car.comp[i, j] <- alpha0.car.comp + alpha.cwd.car.comp * CWD[i] + alpha.precip.car.comp * Precip[i, j]
            + alpha.block.car.comp[Block[i]]
 

@@ -34,7 +34,7 @@ Coupe <- data.JAGS$Obs_cov$Coupe
 
 ##detection variables
 CWD <- data.JAGS$Obs_cov$CWD_STD
-data.JAGS$Obs_cov$CWD_tot_m3
+CWD_tot<- data.JAGS$Obs_cov$CWD ######### change
 Precip <- as.matrix(data.JAGS$precip[, -1])
 dimnames(Precip) <- NULL
 BlockOrig <- data.JAGS$Obs_cov$Bloc
@@ -58,6 +58,7 @@ linData <- list(y.sal = y.sal,
                 nvisits = nvisits,
                 ngroups = ngroups,
                 CWD = CWD,
+                CWD_tot = CWD_tot, ######### change
                 Canopy = data.JAGS$Obs_cov$canopy/100,
                 Litter = data.JAGS$Obs_cov$litter,
                 Precip = Precip,
@@ -214,18 +215,22 @@ nb <- 75000
 nt <- 5
 
 library(jagsUI)
-# out.jags <- jags(data = linData,
-                 # inits = inits,
-                 # parameters = params,
-                 # model = "SEM6.jags",
-                 # n.thin = nt,
-                 # n.chains = nc,
-                 # n.burnin = nb,
-                 # n.iter = ni)#,
-                 # #parallel = TRUE,
-                 # #n.adapt = 10000)
+out.jags <- jags(data = linData,
+inits = inits,
+parameters = params,
+model = "SEM6.jags",
+n.thin = nt,
+n.chains = nc,
+n.burnin = nb,
+n.iter = ni)#,
+#parallel = TRUE,
+#n.adapt = 10000)
 
-save(out.jags, file = "out.jags.sem6.Rdata")
+# save(out.jags, file = "out.jags.sem6.Rdata")
+load(file = "out.jags.sem6.Rdata")
+
+save(out.jags, file = "out.jags.sem6.CWD.Rdata")
+load(file = "out.jags.sem6.CWD.Rdata")
 
 ##check output
 print(out.jags, 3)
@@ -258,7 +263,7 @@ round(out.jags$summary[c("beta0.cwd",
                          "sigma.block.sal",
                          "finiteOcc.sal",
                          
-                         "psi.car.comp[1]", "psi.car.comp[3]", "psi.car.comp[3]",
+                         "psi.car.comp[1]", "psi.car.comp[2]", "psi.car.comp[3]",
                          "alpha0.car.comp", "alpha.precip.car.comp",
                          "alpha.cwd.car.comp",
                          "sigma.block.car.comp",

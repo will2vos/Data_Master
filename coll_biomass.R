@@ -4,7 +4,7 @@ setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
 # importation mesures de biomasse
 coll_biomass <-
   read.csv(
-    "coll_biomasse.csv",
+    "coll_biomass.csv",
     header = TRUE,
     stringsAsFactors = TRUE)
 
@@ -14,6 +14,8 @@ data60 <-
            header = TRUE,
            stringsAsFactors = TRUE)
 
+colnames(coll_biomass)[1]<-"sites"
+
 # joindre donnée de biomasse et information des sites
 coll_biomass <-
   merge(data60, coll_biomass, by = "sites", all.x = TRUE)
@@ -21,7 +23,7 @@ coll_biomass <-
 coll_biomass<- coll_biomass[order(coll_biomass$sites),]
 
 coll_biomass<- coll_biomass[,-1]
-write.csv(coll_biomass,"coll_biomasse.csv", row.names = F)
+write.csv(coll_biomass,"coll_biomass.csv", row.names = F)
 
 # visualisation de la biomasse des collemboles en fonction du traitements de coupe
 coll_biomass$Coupe <- relevel(coll_biomass$Coupe, ref = "temoin")
