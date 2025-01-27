@@ -1,5 +1,5 @@
 ##setup for SEM
-setwd("/home/mazerolm/Documents/Supervision/Devos/Data")
+# setwd("/home/mazerolm/Documents/Supervision/Devos/Data")
 
 ##load clean file
 load(file = "SEM_data_JAGS.RData")
@@ -208,22 +208,24 @@ nc <- 5
 ni <- 200000
 
 ## burn-in
-nb <- 750000
+nb <- 75000
 
 ## thinning rate (save 1 obs per 5 iterations)
 nt <- 5
 
 library(jagsUI)
-out.jags <- jags(data = linData,
-                 inits = inits,
-                 parameters = params,
-                 model = "SEM6.jags",
-                 n.thin = nt,
-                 n.chains = nc,
-                 n.burnin = nb,
-                 n.iter = ni)#,
-                 #parallel = TRUE,
-                 #n.adapt = 10000)
+# out.jags <- jags(data = linData,
+                 # inits = inits,
+                 # parameters = params,
+                 # model = "SEM6.jags",
+                 # n.thin = nt,
+                 # n.chains = nc,
+                 # n.burnin = nb,
+                 # n.iter = ni)#,
+                 # #parallel = TRUE,
+                 # #n.adapt = 10000)
+
+save(out.jags, file = "out.jags.sem6.Rdata")
 
 ##check output
 print(out.jags, 3)
