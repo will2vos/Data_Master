@@ -548,6 +548,9 @@ abline(
   col = "red",
   lwd = 3
 )
+quant2v3.sal
+mean(diff.2v3.sal)
+
 quant2v3.sal.90 <- quantile(diff.2v3.sal, probs = c(0.05, 0.95))
 abline(
   v = quant2v3.sal.90,

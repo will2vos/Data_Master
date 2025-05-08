@@ -1,19 +1,99 @@
 #positionnement
-setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data")
+setwd(dir = "/Users/williamdevos/Documents/Maitrise/Data.Git")
 
 #importation jeu de données CWD
-test<-read.csv("cov_mesures_cwd.csv",header = TRUE, sep=";",dec= ",", stringsAsFactors = TRUE)
-
-
-CWD<-read.csv("cov_mesures_cwd.csv",header = TRUE, sep=";",dec= ",", stringsAsFactors = TRUE)
+CWD<-read.csv("cov_cwd_mesures.csv",header = TRUE, sep=",",dec= ".", stringsAsFactors = TRUE)
 CWD$Classe<-as.factor(CWD$Classe)
 CWD$Analogue<-as.factor(CWD$Analogue)
 str(CWD)
 
-# créer colonne avec volume CWD en cm3 et m3
-CWD$Vol_CM3<- (CWD$Longueur/12)*(5*CWD$Diam_bas+5*CWD$Diam_api+2*sqrt(CWD$Diam_bas*CWD$Diam_api))
-CWD$Vol_M3<-CWD$Vol_CM3 /1000000
+CWD$Coupe <- factor(CWD$Coupe, levels = c("temoin", "partielle", "totale"))
 
+# créer colonne avec volume CWD en cm3 et m3
+CWD$Vol_CM3 <- (CWD$Longueur/12)*(5*CWD$Diam_bas+5*CWD$Diam_api+2*sqrt(CWD$Diam_bas*CWD$Diam_api))
+CWD$Vol_M3 <- CWD$Vol_CM3 /1000000
+
+#ajout de colonne pour m3/ha
+
+CWD$Vol_m3_ha <- NA
+CWD$Vol_m3_ha[CWD$Coupe == "temoin"] <- CWD$Vol_M3[CWD$Coupe == "temoin"] / 0.48
+CWD$Vol_m3_ha[CWD$Coupe == "partielle"] <- CWD$Vol_M3[CWD$Coupe == "partielle"] / 0.96
+CWD$Vol_m3_ha[CWD$Coupe == "totale"] <- CWD$Vol_M3[CWD$Coupe == "totale"] / 0.96
+
+agg_CWD_m3_ha <- with(tapply(Vol_m3_ha, INDEX = Coupe, FUN = sum),
+                    data = CWD) 
+agg_CWD_m3_ha
+
+sd_CWD_m3_ha <- with(tapply(Vol_m3_ha, INDEX = Coupe, FUN = sd),
+                      data = CWD) 
+sd_CWD_m3_ha
+
+# graphique
+
+par(mfrow = c(1, 1), mar = c(5, 4.5, 4, 2) + 0.1)
+
+boxplot(CWD$Vol_m3_ha ~ CWD$Coupe,
+        xlab = NA,
+        ylab = expression("CWD (m"^{3} * "/ha)"),
+        xaxt = "n",
+        cex.axis = 1.2,
+        cex.lab = 1.2,
+        cex.main = 1.5
+        )
+
+overstory = c("Control", "Partial-cut", "Clear-cut")
+
+axis(
+  1,
+  at = 1:3,
+  labels = overstory,
+  lwd = 1,
+  padj = 0.5
+)
+
+mtext("A", side=3, line=1, cex=2, adj=0.1, col="black") 
+
+# CWD selon les coupes
+agg_CWD_cm3 <- with(tapply(Vol_CM3, INDEX = Coupe, FUN = sum),
+                 data = CWD) 
+agg_CWD_cm3
+
+agg_CWD_m3 <- agg_CWD_cm3 /1000000
+agg_CWD_m3
+
+# 12 placettes pour les témoins, 24 placettes pour coupe partielle, 24 placettes pour les coupes totale. 
+# chaque placette mesure 400 m2 soit 0,4 ha
+# Coupe partielle et coupe totale = 0,96 ha
+# témoins = 0,48 ha
+
+CWD_m3_ha = agg_CWD_m3 / 0.96
+CWD_m3_ha[2] = agg_CWD_m3[2] / 0.48
+CWD_m3_ha
+
+# mesure des SD en m3/ha
+
+# temoin
+CWD_control <- CWD$Vol_CM3[CWD$Coupe == "temoin"]
+CWD_control_ha <- CWD_control / 0.48
+sd(CWD_control_ha)
+CWD_control_ha_m3 <-CWD_control_ha/1000000
+sd(CWD_control_ha_m3)
+
+# partielle
+CWD_partielle <- CWD$Vol_CM3[CWD$Coupe == "partielle"]
+CWD_partielle_ha <- CWD_partielle / 0.96
+sd(CWD_partielle_ha)
+CWD_partielle_ha_m3 <-CWD_partielle_ha/1000000
+sd(CWD_partielle_ha_m3)
+
+# totale
+CWD_totale <- CWD$Vol_CM3[CWD$Coupe == "totale"]
+CWD_totale_ha <- CWD_totale / 0.96
+sd(CWD_totale_ha)
+CWD_totale_ha_m3 <-CWD_totale_ha/1000000
+sd(CWD_totale_ha_m3)
+
+# ajout 
 # Sum CWD en cm3 dans Jeu de donnée 60 sites
 Data60<-read.csv("Data_60.csv",header = TRUE, sep=",", stringsAsFactors = TRUE)
 
@@ -67,13 +147,24 @@ plot(~ Frais + Avance, data=Data60)
 
 
 #importation data litter
-litt<-read.csv("cov_mesures_litter.csv",header = TRUE, sep=";",stringsAsFactors = TRUE, dec = ",")
+litt<-read.csv("cov_litter_mesures.csv",header = TRUE, sep=",",stringsAsFactors = TRUE, dec = ".")
 str(litt)
+
+litt_mean <- with(tapply(Moyenne, INDEX = Coupe, FUN = mean),
+                  data = litt)
+litt_mean
+
 Data60$litter.depth<-litt$Moyenne
 
+
+
 #importation data canop1.3
-Canop_130<-read.csv("cov_canop_130.csv",header = TRUE, sep=";",stringsAsFactors = TRUE, dec = ",")
+Canop_130<-read.csv("cov_canop130_mesures.csv",header = TRUE, sep=",",stringsAsFactors = TRUE, dec = ",")
 Data60$Canop_130<-Canop_130$Ouverture
+
+canop_mean <- with(tapply(Ouverture, INDEX = Coupe, FUN = mean),
+                  data = Canop_130)
+canop_mean
 
 #importation data canop0.5
 Canop_050<-read.csv("cov_canop_050.csv",header = TRUE, sep=";",stringsAsFactors = TRUE, dec = ",")

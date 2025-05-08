@@ -185,7 +185,7 @@ abline(
   col = "red",
   lwd = 3
 )
-quant1v2
+quant1v2.pcin
 
 diff.1v3.pcin <- out.occ.pcin$sims.list$psi[, 1] -
   out.occ.pcin$sims.list$psi[, 3]
